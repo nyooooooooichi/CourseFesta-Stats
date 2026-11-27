@@ -48,7 +48,7 @@ $('settingsBtn').onclick=openSettings;$('cancelBtn').onclick=()=>$('setup').clas
 $('saveBtn').onclick=async()=>{const code=$('siteCode').value.trim().replace(/^https?:\/\//,'').split('.')[0];const token=$('apiToken').value.trim();if(!code||!token){$('errorBox').textContent='サイトコードとAPIキーを入力してください。';return}localStorage.setItem('cf_stats_config',JSON.stringify({code,token}));await loadStats()};
 $('refreshBtn').onclick=loadStats;
 function isoDay(d){return d.toISOString().slice(0,10)}
-function dateParam(d){return isoDay(d)+'T00:00:00Z'}
+function dateParam(d){return d.toISOString().replace(/\.\d{3}Z$/,'Z')}
 function sumDaily(arr){return (arr||[]).reduce((s,x)=>s+(Array.isArray(x.hourly)?x.hourly.reduce((a,b)=>a+Number(b||0),0):Number(x.daily??x.count??0)),0)}
 function extractTotal(data){return Number(data.total??data.count??data.total_utc??0)}
 async function loadStats(){
@@ -57,10 +57,10 @@ async function loadStats(){
  try{
   const base='https://'+c.code+'.goatcounter.com/api/v0';
   const headers={'Authorization':'Bearer '+c.token,'Content-Type':'application/json'};
-  const now=new Date(),today=new Date(now);today.setHours(0,0,0,0);
+  const now=new Date(),apiNow=new Date(now);apiNow.setMinutes(0,0,0,0);const today=new Date(now);today.setHours(0,0,0,0);
   const weekStart=new Date(today);weekStart.setDate(weekStart.getDate()-6);
   const allStart=new Date('2000-01-01T00:00:00Z');
-  const qs=(start,end)=>'?start='+encodeURIComponent(dateParam(start))+'&end='+encodeURIComponent(now.toISOString());
+  const qs=(start,end)=>'?start='+encodeURIComponent(dateParam(start))+'&end='+encodeURIComponent(dateParam(apiNow));
   const [allRes,weekRes,hitsRes]=await Promise.all([
    fetch(base+'/stats/total'+qs(allStart,now),{headers}),
    fetch(base+'/stats/total'+qs(weekStart,now),{headers}),
