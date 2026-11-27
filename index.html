@@ -43,13 +43,13 @@ const $=id=>document.getElementById(id);
 const fmt=n=>Number(n||0).toLocaleString('ja-JP');
 const saved=()=>{try{return JSON.parse(localStorage.getItem('cf_stats_config')||'{}')}catch{return {}}};
 function setStatus(ok,msg){$('statusDot').className='dot'+(ok?' ok':'');$('statusText').textContent=msg}
-function openSettings(){const c=saved();$('siteCode').value=c.code||'';$('apiToken').value=c.token||'';$('errorBox').textContent='';$('setup').classList.add('open')}
+function openSettings(){const c=saved();$('siteCode').value=c.code||'kyooooooo1';$('apiToken').value=c.token||'';$('errorBox').textContent='';$('setup').classList.add('open')}
 $('settingsBtn').onclick=openSettings;$('cancelBtn').onclick=()=>$('setup').classList.remove('open');
 $('saveBtn').onclick=async()=>{const code=$('siteCode').value.trim().replace(/^https?:\/\//,'').split('.')[0];const token=$('apiToken').value.trim();if(!code||!token){$('errorBox').textContent='サイトコードとAPIキーを入力してください。';return}localStorage.setItem('cf_stats_config',JSON.stringify({code,token}));await loadStats()};
 $('refreshBtn').onclick=loadStats;
 function isoDay(d){return d.toISOString().slice(0,10)}
 function dateParam(d){return isoDay(d)+'T00:00:00Z'}
-function sumDaily(arr){return (arr||[]).reduce((s,x)=>s+(Array.isArray(x.hourly)?x.hourly.reduce((a,b)=>a+Number(b||0),0):Number(x.count||0)),0)}
+function sumDaily(arr){return (arr||[]).reduce((s,x)=>s+(Array.isArray(x.hourly)?x.hourly.reduce((a,b)=>a+Number(b||0),0):Number(x.daily??x.count??0)),0)}
 function extractTotal(data){return Number(data.total??data.count??data.total_utc??0)}
 async function loadStats(){
  const c=saved();if(!c.code||!c.token){setStatus(false,'未接続');$('setup').classList.add('open');return}
