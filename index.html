@@ -45,10 +45,10 @@ const saved=()=>{try{return JSON.parse(localStorage.getItem('cf_stats_config')||
 function setStatus(ok,msg){$('statusDot').className='dot'+(ok?' ok':'');$('statusText').textContent=msg}
 function openSettings(){const c=saved();$('siteCode').value=c.code||'kyooooooo1';$('apiToken').value=c.token||'';$('errorBox').textContent='';$('setup').classList.add('open')}
 $('settingsBtn').onclick=openSettings;$('cancelBtn').onclick=()=>$('setup').classList.remove('open');
-$('saveBtn').onclick=async()=>{const code=$('siteCode').value.trim().replace(/^https?:\\/\\//,'').split('.')[0];const token=$('apiToken').value.trim();if(!code||!token){$('errorBox').textContent='サイトコードとAPIキーを入力してください。';return}localStorage.setItem('cf_stats_config',JSON.stringify({code,token}));await loadStats()};
+$('saveBtn').onclick=async()=>{const code=$('siteCode').value.trim().replace(/^https?:\/\//,'').split('.')[0];const token=$('apiToken').value.trim();if(!code||!token){$('errorBox').textContent='サイトコードとAPIキーを入力してください。';return}localStorage.setItem('cf_stats_config',JSON.stringify({code,token}));await loadStats()};
 $('refreshBtn').onclick=loadStats;
 function isoDay(d){return d.toISOString().slice(0,10)}
-function dateParam(d){return d.toISOString().replace(/\\.\\d{3}Z$/,'Z')}
+function dateParam(d){return d.toISOString().replace(/\.\d{3}Z$/,'Z')}
 function sumDaily(arr){return (arr||[]).reduce((s,x)=>s+(Array.isArray(x.hourly)?x.hourly.reduce((a,b)=>a+Number(b||0),0):Number(x.daily??x.count??0)),0)}
 function extractTotal(data){return Number(data.total??data.count??data.total_utc??0)}
 let statsLoading=false;
